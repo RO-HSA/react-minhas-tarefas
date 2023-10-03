@@ -7,10 +7,7 @@ type TarefasState = {
 }
 
 const initialState: TarefasState = {
-  itens:
-    (localStorage.getItem('itens') || '{}') === '{}'
-      ? []
-      : JSON.parse(localStorage.getItem('itens') || '{}')
+  itens: JSON.parse(localStorage.getItem('itens') || '[]')
 }
 
 const setItems = (state: TarefasState) => {
