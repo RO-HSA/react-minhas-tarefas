@@ -7,29 +7,14 @@ type TarefasState = {
 }
 
 const initialState: TarefasState = {
-  itens: [
-    {
-      id: 1,
-      descricao: 'Estudar JavaScript revendo o exercício do módulo 7',
-      prioridade: enums.Prioridade.NORMAL,
-      status: enums.Status.CONCLUIDO,
-      titulo: 'Estudar JavaScript'
-    },
-    {
-      id: 2,
-      descricao: 'Estudar material de apoio',
-      prioridade: enums.Prioridade.NORMAL,
-      status: enums.Status.PENDENTE,
-      titulo: 'Estudar Typescript'
-    },
-    {
-      id: 3,
-      descricao: 'Praticar a construção de uma landing page',
-      prioridade: enums.Prioridade.IMPORTANTE,
-      status: enums.Status.PENDENTE,
-      titulo: 'Estudar Bootstrap'
-    }
-  ]
+  itens:
+    (localStorage.getItem('itens') || '{}') === '{}'
+      ? []
+      : JSON.parse(localStorage.getItem('itens') || '{}')
+}
+
+const setItems = (state: TarefasState) => {
+  localStorage.setItem('itens', JSON.stringify(state.itens))
 }
 
 const tarefasSlice = createSlice({
@@ -40,6 +25,8 @@ const tarefasSlice = createSlice({
       state.itens = [
         ...state.itens.filter((tarefa) => tarefa.id !== action.payload)
       ]
+
+      setItems(state)
     },
     editar: (state, action: PayloadAction<Tarefa>) => {
       const indexDaTarefa = state.itens.findIndex(
@@ -49,6 +36,8 @@ const tarefasSlice = createSlice({
       if (indexDaTarefa >= 0) {
         state.itens[indexDaTarefa] = action.payload
       }
+
+      setItems(state)
     },
     cadastrar: (state, action: PayloadAction<Omit<Tarefa, 'id'>>) => {
       const tarefaJaExiste = state.itens.find(
@@ -67,6 +56,7 @@ const tarefasSlice = createSlice({
         }
 
         state.itens.push(tarefaNova)
+        setItems(state)
       }
     },
     alteraStatus: (
@@ -82,6 +72,8 @@ const tarefasSlice = createSlice({
           ? enums.Status.CONCLUIDO
           : enums.Status.PENDENTE
       }
+
+      setItems(state)
     }
   }
 })
